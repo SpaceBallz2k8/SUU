@@ -512,7 +512,7 @@
     <p style="margin-top: 1rem; max-width: 600px; margin-left: auto; margin-right: auto; opacity: 0.8;">Powered by 7-Zip, Nyuu, ParPar and PAR2.</p>
     <div class="license-badge">✓ FREE for Windows x64 · Proprietary (not open source)</div>
     <div class="hero-buttons">
-      <button class="cta-btn" id="downloadMainBtn">⬇ Download v1.0 Public (Windows x64)</button>
+      <button class="cta-btn" id="downloadMainBtn">⬇ Download v1.2 Public (Windows x64)</button>
       <button id="docsBtn" class="cta-btn" style="background: transparent; border:1px solid #00AEFF; color:#00AEFF; box-shadow: none;">📄 Documentation</button>
       <button id="githubBtn" class="cta-btn" style="background: transparent; border:1px solid #4CC9FF; color:#4CC9FF;">🐙 GitHub</button>
     </div>
@@ -788,7 +788,7 @@
   }, { threshold: 0.15 });
   reveals.forEach(el => revealObserver.observe(el));
 
-  const BINARY_URL = "https://github.com/SpaceBallz2k8/SUU/releases/download/v1.0.0/suu_latest.exe";
+  const BINARY_URL = "https://github.com/SpaceBallz2k8/SUU/releases/download/v1.2/suu_latest.exe";
   const GITHUB_URL = "https://github.com/SpaceBallz2k8/SUU";
 
   function showNotification(message, isUpdate = false) {
@@ -811,7 +811,7 @@
 
   function downloadBinary() {
     window.open(BINARY_URL, '_blank');
-    showNotification("⬇ Download started: SUU v1.0 Public (Windows x64)", true);
+    showNotification("⬇ Download started: SUU v1.2 Public (Windows x64)", true);
   }
 
   document.getElementById('downloadMainBtn')?.addEventListener('click', downloadBinary);
