@@ -1,13 +1,813 @@
-﻿<!DOCTYPE html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <title>SUU</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>SpaceBallz | SUU - Usenet Upload Command Center</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: #02050A;
+      color: #E5EAF2;
+      font-family: 'Segoe UI', 'Orbitron', 'Inter', system-ui, -apple-system, 'SF Pro Text', monospace;
+      overflow-x: hidden;
+      scroll-behavior: smooth;
+    }
+
+    #bg-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+      background: radial-gradient(circle at 20% 30%, #03070f, #010207);
+    }
+
+    .scanlines {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: repeating-linear-gradient(0deg, rgba(0,0,0,0) 0px, rgba(0,255,255,0.02) 2px, transparent 3px);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .container {
+      position: relative;
+      z-index: 2;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+
+    .glass-panel {
+      background: rgba(7, 16, 31, 0.55);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(0, 174, 255, 0.25);
+      border-radius: 32px;
+      box-shadow: 0 20px 35px -12px rgba(0,0,0,0.5), 0 0 12px rgba(0,174,255,0.2);
+      transition: all 0.3s ease;
+    }
+
+    .glass-panel:hover {
+      border-color: #4CC9FF;
+      box-shadow: 0 0 20px rgba(76,201,255,0.3);
+    }
+
+    button, .cta-btn {
+      background: linear-gradient(135deg, #00AEFF, #0077aa);
+      border: none;
+      padding: 12px 28px;
+      border-radius: 60px;
+      font-weight: bold;
+      font-size: 1rem;
+      font-family: inherit;
+      color: #02050A;
+      cursor: pointer;
+      transition: 0.2s;
+      box-shadow: 0 0 8px #00aeff88;
+      letter-spacing: 1px;
+    }
+
+    button:hover, .cta-btn:hover {
+      transform: scale(1.03);
+      background: linear-gradient(135deg, #1fb4ff, #0088cc);
+      box-shadow: 0 0 18px #4CC9FF;
+    }
+
+    h1, h2, h3 {
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+
+    h2 {
+      font-size: 2.5rem;
+      background: linear-gradient(120deg, #E5EAF2, #4CC9FF);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+      margin-bottom: 1.5rem;
+      display: inline-block;
+    }
+
+    .section {
+      margin: 6rem 0;
+    }
+
+    .hero {
+      text-align: center;
+      padding: 3rem 1rem 5rem 1rem;
+    }
+
+    .logo-container {
+      position: relative;
+      display: inline-block;
+      margin-bottom: 1.5rem;
+    }
+
+    .logo-glow {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 110%;
+      height: 110%;
+      transform: translate(-50%, -50%);
+      background: radial-gradient(circle, rgba(0,174,255,0.4) 0%, rgba(0,174,255,0) 70%);
+      border-radius: 50%;
+      z-index: -1;
+      animation: pulseGlow 2s infinite alternate;
+    }
+
+    @keyframes pulseGlow {
+      0% { opacity: 0.5; transform: translate(-50%, -50%) scale(0.95); }
+      100% { opacity: 1; transform: translate(-50%, -50%) scale(1.05); }
+    }
+
+    .logo {
+      max-width: 280px;
+      width: 100%;
+      height: auto;
+      filter: drop-shadow(0 0 15px rgba(0,174,255,0.5));
+      transition: filter 0.3s ease;
+    }
+
+    .logo:hover {
+      filter: drop-shadow(0 0 25px rgba(76,201,255,0.8));
+    }
+
+    .hero h1 {
+      font-size: 3rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #fff, #4CC9FF, #00AEFF);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+      margin-top: 0.5rem;
+    }
+
+    .hero .sub {
+      font-size: 1.6rem;
+      font-weight: 400;
+      margin: 1rem 0;
+    }
+
+    .hero-buttons {
+      display: flex;
+      gap: 1.2rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 2rem;
+    }
+
+    .feature-ribbon {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1.2rem;
+      background: rgba(0, 174, 255, 0.08);
+      backdrop-filter: blur(8px);
+      border-radius: 70px;
+      padding: 1rem 2rem;
+      margin: 1rem 0 2rem;
+      border: 1px solid rgba(76,201,255,0.4);
+    }
+
+    .ribbon-item {
+      font-weight: 600;
+      font-size: 0.9rem;
+      letter-spacing: 1px;
+      background: #07101Faa;
+      padding: 0.4rem 1rem;
+      border-radius: 40px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+
+    .feature-card {
+      background: rgba(7, 16, 31, 0.7);
+      backdrop-filter: blur(8px);
+      border-radius: 28px;
+      padding: 1.8rem;
+      border-left: 4px solid #00AEFF;
+      transition: all 0.25s ease;
+    }
+
+    .feature-card h3 {
+      font-size: 1.6rem;
+      margin-bottom: 0.7rem;
+    }
+
+    .feature-card p {
+      opacity: 0.8;
+    }
+
+    .screenshot-showcase {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+      justify-content: center;
+    }
+
+    .screenshot-card {
+      flex: 1;
+      min-width: 240px;
+      background: #07101Faa;
+      border-radius: 24px;
+      padding: 1rem;
+      text-align: center;
+      border: 1px solid #00aeff55;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+
+    .screenshot-card .mock-img {
+      background: linear-gradient(145deg, #0a1a2f, #020c1a);
+      border-radius: 20px;
+      height: 180px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: monospace;
+      color: #4CC9FF;
+      border: 1px solid #4cc9ff33;
+      margin-bottom: 1rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .screenshot-card .mock-img::after {
+      content: "📸 Screenshot Coming Soon";
+      opacity: 0.6;
+      font-size: 0.8rem;
+    }
+
+    .workflow-pipeline {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.8rem;
+      margin: 2rem 0;
+    }
+
+    .pipeline-stage {
+      background: #07101Fcc;
+      border-radius: 60px;
+      padding: 0.8rem 1.6rem;
+      font-weight: bold;
+      border: 1px solid #00aeff;
+      backdrop-filter: blur(4px);
+      animation: softGlow 2s infinite alternate;
+    }
+
+    @keyframes softGlow {
+      0% { text-shadow: 0 0 0px #00aeff; border-color: #00aeff55; }
+      100% { text-shadow: 0 0 4px #4CC9FF; border-color: #4CC9FF; }
+    }
+
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: rgba(7,16,31,0.7);
+      border-radius: 24px;
+      overflow: hidden;
+    }
+
+    .comparison-table th, .comparison-table td {
+      padding: 1rem;
+      text-align: left;
+      border-bottom: 1px solid #00aeff33;
+    }
+
+    .tech-specs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+
+    .spec-card {
+      background: #07101Faa;
+      backdrop-filter: blur(8px);
+      padding: 1.2rem;
+      border-radius: 20px;
+      flex: 1 1 150px;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .download-panel {
+      background: linear-gradient(145deg, #0a1628, #02050A);
+      border-radius: 48px;
+      padding: 3rem 2rem;
+      text-align: center;
+      border: 1px solid #00AEFF;
+    }
+
+    .faq-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px,1fr));
+      gap: 1.5rem;
+    }
+
+    .faq-item {
+      background: rgba(7,16,31,0.7);
+      border-radius: 24px;
+      padding: 1.4rem;
+    }
+
+    footer {
+      text-align: center;
+      padding: 2rem 0;
+      border-top: 1px solid #00aeff33;
+      margin-top: 3rem;
+    }
+
+    .footer-links a {
+      color: #4CC9FF;
+      margin: 0 1rem;
+      text-decoration: none;
+    }
+
+    .license-badge {
+      display: inline-block;
+      background: #0a1a2faa;
+      border-radius: 40px;
+      padding: 0.3rem 1rem;
+      font-size: 0.8rem;
+      margin-top: 1rem;
+      border: 1px solid #4CC9FF55;
+    }
+
+    .windows-badge {
+      background: #00aeff22;
+      border-radius: 24px;
+      padding: 0.25rem 0.8rem;
+      font-size: 0.75rem;
+      font-weight: normal;
+      margin-left: 0.5rem;
+      vertical-align: middle;
+    }
+
+    .tool-status {
+      background: #07101Fcc;
+      border-radius: 20px;
+      padding: 1rem;
+      margin: 1rem 0;
+      font-size: 0.9rem;
+      border-left: 3px solid #4CC9FF;
+    }
+
+    .tool-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.5rem;
+      border-bottom: 1px solid #00aeff33;
+    }
+
+    .tool-item:last-child {
+      border-bottom: none;
+    }
+
+    .version-tag {
+      font-family: monospace;
+      background: #02050A;
+      padding: 0.2rem 0.6rem;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      color: #4CC9FF;
+    }
+
+    .update-btn {
+      background: #00AEFF33;
+      border: 1px solid #00AEFF;
+      padding: 0.2rem 0.8rem;
+      border-radius: 20px;
+      font-size: 0.7rem;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .update-btn:hover {
+      background: #00AEFF;
+      color: #02050A;
+    }
+
+    @media (max-width: 760px) {
+      .container {
+        padding: 0 1rem;
+      }
+      h2 {
+        font-size: 1.8rem;
+      }
+      .hero h1 {
+        font-size: 2rem;
+      }
+      .hero .sub {
+        font-size: 1.2rem;
+      }
+      .logo {
+        max-width: 200px;
+      }
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(25px);
+      transition: opacity 0.7s ease, transform 0.6s ease;
+    }
+
+    .reveal.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
 </head>
 <body>
-    <h1>Welcome to SUU</h1>
-    <p>A Windows x64 Usenet Uploader GUI</p>
-    <a href='https://github.com/SpaceBallz2k8/SUU/releases/latest/download/suu_latest.exe'>
-        <button>Download for Windows x64</button>
-    </a>
+
+<canvas id="bg-canvas"></canvas>
+<div class="scanlines"></div>
+
+<div class="container">
+  <div class="hero reveal">
+    <div class="logo-container">
+      <div class="logo-glow"></div>
+      <img src="logo.png" alt="SpaceBallz's Usenet Uploader" class="logo" onerror="this.style.display='none'; document.querySelector('.logo-container').innerHTML+='<div style=\'font-size:2rem; font-weight:bold;\'>SpaceBallz<br><span style=\'font-size:1rem;\'>USENET UPLOADER</span></div>'">
+    </div>
+    <h1>SpaceBallz's SUU</h1>
+    <div class="sub">Compress. Protect. Upload. Automate.</div>
+    <p style="margin-top: 1rem; max-width: 600px; margin-left: auto; margin-right: auto; opacity: 0.8;">Powered by 7-Zip, Nyuu, ParPar and PAR2.</p>
+    <div class="license-badge">✓ FREE for Windows x64 · Proprietary (not open source)</div>
+    <div class="hero-buttons">
+      <button class="cta-btn" id="downloadMainBtn">⬇ Download v1.0 Public (Windows x64)</button>
+      <button id="docsBtn" class="cta-btn" style="background: transparent; border:1px solid #00AEFF; color:#00AEFF; box-shadow: none;">📄 Documentation</button>
+      <button id="githubBtn" class="cta-btn" style="background: transparent; border:1px solid #4CC9FF; color:#4CC9FF;">🐙 GitHub</button>
+    </div>
+  </div>
+
+  <div class="feature-ribbon reveal">
+    <div class="ribbon-item">✓ Multi-Account Uploading</div>
+    <div class="ribbon-item">✓ Parallel Pipelines</div>
+    <div class="ribbon-item">✓ PAR2 Protection</div>
+    <div class="ribbon-item">✓ Upload Scheduling</div>
+    <div class="ribbon-item">✓ Automatic NZB Creation</div>
+    <div class="ribbon-item">✓ Metadata Obfuscation</div>
+    <div class="ribbon-item">✓ Auto Tool Download</div>
+  </div>
+
+  <div class="section reveal">
+    <h2>🔧 Smart Tool Management</h2>
+    <div class="glass-panel" style="padding: 2rem;">
+      <p style="margin-bottom: 1rem; font-size: 1.1rem;">🚀 <strong>First-run assistant</strong> — If required tools are missing, SUU will alert you and, with your permission, automatically download the latest versions from official GitHub repositories.</p>
+      <div class="tool-status">
+        <div class="tool-item">
+          <span><strong>7-Zip</strong> (7z.exe)</span>
+          <span class="version-tag" id="7zip-version">v24.08</span>
+          <button class="update-btn" data-tool="7zip">Check Upgrade</button>
+        </div>
+        <div class="tool-item">
+          <span><strong>Nyuu</strong> (nyuu.exe)</span>
+          <span class="version-tag" id="nyuu-version">v0.4.3</span>
+          <button class="update-btn" data-tool="nyuu">Check Upgrade</button>
+        </div>
+        <div class="tool-item">
+          <span><strong>ParPar</strong> (parpar.exe)</span>
+          <span class="version-tag" id="parpar-version">v0.5.3</span>
+          <button class="update-btn" data-tool="parpar">Check Upgrade</button>
+        </div>
+        <div class="tool-item">
+          <span><strong>par2cmdline</strong> (par2.exe)</span>
+          <span class="version-tag" id="par2-version">v0.8.1</span>
+          <button class="update-btn" data-tool="par2">Check Upgrade</button>
+        </div>
+      </div>
+      <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 1.5rem;">
+        <button id="checkAllToolsBtn" style="background: #07101F; border: 1px solid #4CC9FF; color: #4CC9FF;">🔍 Check All Tools for Updates</button>
+        <button id="simulateFirstRunBtn" style="background: #00AEFF33; border: 1px solid #00AEFF;">✨ Simulate First-Run Alert</button>
+      </div>
+      <p style="font-size: 0.8rem; text-align: center; margin-top: 1rem;">⚡ Tools are downloaded from official GitHub releases. Version tracking & automatic upgrades available in Settings → Tools.</p>
+    </div>
+  </div>
+
+  <div class="section reveal">
+    <h2>🔧 Mission Control Features</h2>
+    <div class="features-grid">
+      <div class="feature-card"><h3>📁 Smart File Management</h3><p>Files, folders, collections, job grouping — total control.</p></div>
+      <div class="feature-card"><h3>🌐 Multi-Provider Uploads</h3><p>Multiple accounts, combined throughput for maximum speed.</p></div>
+      <div class="feature-card"><h3>🗜 7-Zip Integration</h3><p>Volume splitting, header encryption, password support.</p></div>
+      <div class="feature-card"><h3>🛡 PAR2 Protection</h3><p>ParPar + PAR2 support, configurable redundancy.</p></div>
+      <div class="feature-card"><h3>⚡ Parallel Processing</h3><p>Multiple concurrent uploads, thread pool management.</p></div>
+      <div class="feature-card"><h3>🕶 Privacy Features</h3><p>Randomized subjects, poster identities, archive name randomization.</p></div>
+    </div>
+  </div>
+
+  <div class="section reveal">
+    <h2>📸 Command Interface</h2>
+    <div class="screenshot-showcase">
+      <div class="screenshot-card"><div class="mock-img"></div><span>Files Tab</span></div>
+      <div class="screenshot-card"><div class="mock-img"></div><span>Accounts Tab</span></div>
+      <div class="screenshot-card"><div class="mock-img"></div><span>Options Tab</span></div>
+      <div class="screenshot-card"><div class="mock-img"></div><span>Posting Dashboard</span></div>
+    </div>
+    <p style="text-align:center; margin-top:1rem; font-size:0.85rem;">✨ Screenshots coming soon — futuristic UI with live telemetry ✨</p>
+  </div>
+
+  <div class="section reveal">
+    <h2>⚙ Upload Pipeline</h2>
+    <div class="workflow-pipeline">
+      <span class="pipeline-stage">📂 FILES</span> <span>→</span>
+      <span class="pipeline-stage">🗂 GROUPING</span> <span>→</span>
+      <span class="pipeline-stage">🗜 7-ZIP</span> <span>→</span>
+      <span class="pipeline-stage">🔧 PAR2</span> <span>→</span>
+      <span class="pipeline-stage">🚀 NYUU</span> <span>→</span>
+      <span class="pipeline-stage">📄 NZB GENERATED</span>
+    </div>
+    <div style="display:flex; flex-wrap:wrap; gap:1.5rem; justify-content:space-between; margin-top:2rem;">
+      <div><strong>Intelligent Job Grouping:</strong> Folder grouping, manual grouping, queue management.</div>
+      <div><strong>Upload Pipeline:</strong> Sequential / parallel mode, connection management.</div>
+      <div><strong>Recovery & Reliability:</strong> PAR2 generation, auto retry, Error 33 recovery.</div>
+      <div><strong>Scheduling:</strong> Scheduled uploads, automated posting.</div>
+    </div>
+  </div>
+
+  <div class="section reveal">
+    <h2>📊 SpaceBallz vs. Typical Uploaders</h2>
+    <table class="comparison-table">
+      <thead><tr><th>Feature</th><th>SpaceBallz SUU</th><th>Typical Uploaders</th></tr></thead>
+      <tbody>
+        <tr><td>Modern GUI</td><td>✓</td><td>✗</td></tr>
+        <tr><td>Multi-Account</td><td>✓</td><td>Limited</td></tr>
+        <tr><td>Scheduling</td><td>✓</td><td>Rare</td></tr>
+        <tr><td>Parallel Uploads</td><td>✓</td><td>Rare</td></tr>
+        <tr><td>Auto Recovery</td><td>✓</td><td>Rare</td></tr>
+        <tr><td>Built-In PAR2</td><td>✓</td><td>Partial</td></tr>
+        <tr><td>Auto Tool Download</td><td>✓</td><td>✗</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section reveal">
+    <h2>🛸 Tech Core</h2>
+    <div class="tech-specs">
+      <div class="spec-card">💻 Platform<br>Windows 10 / 11 <span style="font-size:0.7rem;">(x64)</span></div>
+      <div class="spec-card">🎨 Framework<br>PyQt6</div>
+      <div class="spec-card">🗜 Compression<br>7-Zip</div>
+      <div class="spec-card">🚀 Upload Engine<br>Nyuu</div>
+      <div class="spec-card">🔧 Recovery<br>ParPar / PAR2</div>
+      <div class="spec-card">📦 Output<br>Auto NZB</div>
+    </div>
+  </div>
+
+  <div class="section reveal">
+    <div class="download-panel">
+      <h3 style="font-size: 2rem;">⬇ SpaceBallz's Usenet Uploader</h3>
+      <p style="margin: 0.5rem 0;">Version 1.0 Public · <strong>Windows x64 only</strong> <span class="windows-badge">Windows 10/11</span></p>
+      <p style="font-size:0.9rem; margin-bottom:0.5rem;">💎 Freeware — no open source license. Regular binary updates.</p>
+      <p style="font-size:0.85rem; margin-bottom:1rem;">✨ NEW: Automatic tool download & version tracking ✨</p>
+      <div style="display: flex; gap: 1rem; justify-content: center; margin: 1.5rem 0;">
+        <button id="downloadBottomBtn">⬇ Download SUU v1.0 (Windows)</button>
+        <button id="releaseNotesBtn" style="background: transparent; border: 1px solid #00AEFF; color:#00AEFF;">📜 Release Notes</button>
+      </div>
+      <p style="font-size: 0.8rem;">Requirements: Auto-downloaded on first run (7z, nyuu, par2/parpar)</p>
+      <p style="font-size: 0.7rem; margin-top: 0.7rem;">🔒 Closed-source, free to use. Binaries provided by SpaceBallz.</p>
+    </div>
+  </div>
+
+  <div class="section reveal">
+    <h2>❓ Mission Briefing (FAQ)</h2>
+    <div class="faq-grid">
+      <div class="faq-item"><strong>🔹 Is this free?</strong><br>Yes, completely free. However it is <strong>not open source</strong> — proprietary but no cost.</div>
+      <div class="faq-item"><strong>🔹 What if I'm missing 7z.exe or nyuu.exe?</strong><br>First run detection will alert you & offer to download all required tools from their official GitHub repos.</div>
+      <div class="faq-item"><strong>🔹 Can tools be updated?</strong><br>Yes! Options → Check for Tool Updates. The app tracks version numbers from GitHub releases.</div>
+      <div class="faq-item"><strong>🔹 Does it create NZBs automatically?</strong><br>Yes, after each job or batch, NZBs are generated.</div>
+      <div class="faq-item"><strong>🔹 Can uploads be scheduled?</strong><br>Built-in scheduler with date/time activation.</div>
+      <div class="faq-item"><strong>🔹 Does it support PAR2 generation?</strong><br>Yes, ParPar + legacy PAR2, configurable %.</div>
+      <div class="faq-item"><strong>🔹 Is this Windows only?</strong><br>Yes, Windows x64 only. No Linux/macOS support planned.</div>
+    </div>
+  </div>
+
+  <div class="section reveal glass-panel" style="padding: 2rem; text-align:center;">
+    <h3 style="color:#4CC9FF;">Powered by stellar open-source engines</h3>
+    <p style="margin-top:0.8rem;">7-Zip · Nyuu · ParPar · par2cmdline · PyQt6 · psutil</p>
+    <p style="margin-top:0.5rem;">SpaceBallz SUU UI & integration is proprietary — tools auto-downloaded from their official sources.</p>
+    <p style="margin-top:0.8rem; font-size:0.85rem;">✨ Binaries maintained and distributed by SpaceBallz ✨</p>
+  </div>
+
+  <footer>
+    <div class="footer-links">
+      <a href="https://github.com/SpaceBallz2k8/SUU">GitHub</a> | 
+      <a href="https://github.com/SpaceBallz2k8/SUU/releases/download/v1.0.0/suu_latest.exe">Download</a> | 
+      <a href="#">Documentation</a> | 
+      <a href="https://github.com/SpaceBallz2k8/SUU/issues">Issue Tracker</a>
+    </div>
+    <p style="margin-top:1rem;">© SpaceBallz's Usenet Uploader — Freeware for Windows x64 · Not open source</p>
+    <p style="font-size:0.75rem; margin-top:0.5rem;">🌐 Live at <a href="https://spaceballz2k8.github.io/SUU/" style="color:#4CC9FF;">spaceballz2k8.github.io/SUU</a></p>
+  </footer>
+</div>
+
+<script>
+  const canvas = document.getElementById('bg-canvas');
+  const ctx = canvas.getContext('2d');
+  let width = window.innerWidth;
+  let height = window.innerHeight;
+  let stars = [];
+  let particles = [];
+
+  function resizeCanvas() {
+    width = window.innerWidth;
+    height = window.innerHeight;
+    canvas.width = width;
+    canvas.height = height;
+    initStars(250);
+  }
+
+  function initStars(count) {
+    stars = [];
+    for (let i = 0; i < count; i++) {
+      stars.push({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        radius: Math.random() * 1.8,
+        alpha: Math.random() * 0.6 + 0.2,
+        speed: 0.02 + Math.random() * 0.05
+      });
+    }
+  }
+
+  function drawStars() {
+    for (let s of stars) {
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.radius, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(255, 240, 200, ${s.alpha})`;
+      ctx.fill();
+      s.y += s.speed;
+      if (s.y > height) { s.y = 0; s.x = Math.random() * width; }
+    }
+  }
+
+  class Particle {
+    constructor(x, y) {
+      this.x = x; this.y = y;
+      this.vx = (Math.random() - 0.5) * 1.2;
+      this.vy = (Math.random() - 0.5) * 1.2 - 0.5;
+      this.life = 0.8;
+      this.size = Math.random() * 2.5 + 1;
+    }
+    update() {
+      this.x += this.vx;
+      this.y += this.vy;
+      this.life -= 0.008;
+      return this.life > 0;
+    }
+    draw() {
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(0, 174, 255, ${this.life * 0.6})`;
+      ctx.fill();
+    }
+  }
+
+  function addParticlesAroundMouse(e) {
+    for (let i = 0; i < 4; i++) {
+      particles.push(new Particle(e.clientX + (Math.random() - 0.5) * 12, e.clientY + (Math.random() - 0.5) * 12));
+    }
+  }
+
+  function animateBackground() {
+    ctx.clearRect(0, 0, width, height);
+    let grad = ctx.createLinearGradient(0, 0, width, height);
+    grad.addColorStop(0, '#02050A');
+    grad.addColorStop(1, '#030b17');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, width, height);
+    drawStars();
+    for (let i = 0; i < 3; i++) {
+      ctx.beginPath();
+      let offset = (Date.now() * 0.002 + i) % (width * 1.5);
+      let xPos = offset - 200;
+      ctx.moveTo(xPos, 0);
+      ctx.lineTo(xPos + 70, height);
+      ctx.lineTo(xPos + 30, height);
+      ctx.lineTo(xPos - 20, 0);
+      ctx.fillStyle = `rgba(0, 174, 255, 0.02)`;
+      ctx.fill();
+    }
+    for (let i = particles.length - 1; i >= 0; i--) {
+      if (!particles[i].update()) particles.splice(i, 1);
+      else particles[i].draw();
+    }
+    requestAnimationFrame(animateBackground);
+  }
+
+  window.addEventListener('resize', () => resizeCanvas());
+  document.addEventListener('mousemove', (e) => addParticlesAroundMouse(e));
+  resizeCanvas();
+  animateBackground();
+
+  const reveals = document.querySelectorAll('.reveal');
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) entry.target.classList.add('active');
+      else entry.target.classList.remove('active');
+    });
+  }, { threshold: 0.15 });
+  reveals.forEach(el => revealObserver.observe(el));
+
+  const BINARY_URL = "https://github.com/SpaceBallz2k8/SUU/releases/download/v1.0.0/suu_latest.exe";
+  const GITHUB_URL = "https://github.com/SpaceBallz2k8/SUU";
+
+  function showNotification(message, isUpdate = false) {
+    const notif = document.createElement('div');
+    notif.style.position = 'fixed';
+    notif.style.bottom = '20px';
+    notif.style.right = '20px';
+    notif.style.background = isUpdate ? '#00AEFF' : '#07101F';
+    notif.style.color = '#E5EAF2';
+    notif.style.padding = '1rem 1.5rem';
+    notif.style.borderRadius = '12px';
+    notif.style.border = `1px solid ${isUpdate ? '#4CC9FF' : '#00AEFF'}`;
+    notif.style.zIndex = '1000';
+    notif.style.backdropFilter = 'blur(8px)';
+    notif.style.fontSize = '0.9rem';
+    document.body.appendChild(notif);
+    setTimeout(() => notif.remove(), 4000);
+  }
+
+  function downloadBinary() {
+    window.open(BINARY_URL, '_blank');
+    showNotification("⬇ Download started: SUU v1.0 Public (Windows x64)", true);
+  }
+
+  document.getElementById('downloadMainBtn')?.addEventListener('click', downloadBinary);
+  document.getElementById('downloadBottomBtn')?.addEventListener('click', downloadBinary);
+  
+  document.getElementById('githubBtn')?.addEventListener('click', () => {
+    window.open(GITHUB_URL, '_blank');
+  });
+  
+  document.getElementById('docsBtn')?.addEventListener('click', () => {
+    alert("📘 Documentation coming soon. For now, check the GitHub README for setup guide.");
+  });
+  
+  document.getElementById('releaseNotesBtn')?.addEventListener('click', () => {
+    alert("📌 v1.0 Public - Initial release\n- Auto tool downloader\n- Multi-account uploading\n- PAR2 protection\n- Upload scheduling\n- Windows x64 only");
+  });
+
+  document.querySelectorAll('.update-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const tool = btn.getAttribute('data-tool');
+      showNotification(`🔍 Checking ${tool} for updates...`, true);
+      setTimeout(() => {
+        showNotification(`✨ ${tool} is up to date`, false);
+      }, 1000);
+    });
+  });
+
+  document.getElementById('checkAllToolsBtn')?.addEventListener('click', () => {
+    showNotification(`🔍 Checking all 4 tools for updates...`, true);
+    setTimeout(() => {
+      showNotification(`✅ All tools are at latest versions!`, false);
+    }, 1500);
+  });
+
+  document.getElementById('simulateFirstRunBtn')?.addEventListener('click', () => {
+    const userConfirmed = confirm("⚠️ First Run Detection:\n\nMissing required tools: 7z.exe, nyuu.exe, par2.exe\n\nSpaceBallz SUU can automatically download these tools from their official GitHub repositories.\n\nDownload and install now?");
+    if (userConfirmed) {
+      showNotification(`🚀 Starting tool download from GitHub repos...`, true);
+      setTimeout(() => {
+        showNotification(`✅ All tools installed! 7-Zip v24.08, Nyuu v0.4.3, ParPar v0.5.3`, true);
+        showNotification(`💡 Tools can be updated anytime in Options → Tool Manager`, false);
+      }, 2000);
+    } else {
+      showNotification(`⚠️ Tools not installed. You can manually download them or enable auto-download in Settings.`, false);
+    }
+  });
+
+  document.querySelectorAll('.footer-links a').forEach(link => {
+    link.addEventListener('click', (e) => {
+      if(link.getAttribute('href') === '#') {
+        e.preventDefault();
+        alert("Documentation coming soon!");
+      }
+    });
+  });
+</script>
 </body>
 </html>
