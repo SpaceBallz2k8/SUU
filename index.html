@@ -105,43 +105,67 @@
 
     .hero {
       text-align: center;
-      padding: 3rem 1rem 5rem 1rem;
+      padding: 2rem 1rem 4rem 1rem;
     }
 
-    .logo-container {
+    /* Enhanced logo styling with seamless blending */
+    .logo-wrapper {
       position: relative;
-      display: inline-block;
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
       margin-bottom: 1.5rem;
     }
 
-    .logo-glow {
+    .logo-glow-background {
       position: absolute;
       top: 50%;
       left: 50%;
-      width: 110%;
-      height: 110%;
+      width: 120%;
+      height: 120%;
       transform: translate(-50%, -50%);
-      background: radial-gradient(circle, rgba(0,174,255,0.4) 0%, rgba(0,174,255,0) 70%);
+      background: radial-gradient(ellipse, rgba(0,174,255,0.35) 0%, rgba(0,174,255,0.15) 40%, rgba(0,174,255,0) 70%);
       border-radius: 50%;
-      z-index: -1;
-      animation: pulseGlow 2s infinite alternate;
+      filter: blur(20px);
+      animation: pulseGlow 3s infinite alternate;
+      pointer-events: none;
+    }
+
+    .logo-glow-inner {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 100%;
+      height: 100%;
+      transform: translate(-50%, -50%);
+      background: radial-gradient(circle, rgba(76,201,255,0.25) 0%, rgba(0,174,255,0.1) 30%, rgba(0,174,255,0) 70%);
+      border-radius: 50%;
+      filter: blur(15px);
+      animation: pulseGlow 2.5s infinite alternate-reverse;
+      pointer-events: none;
     }
 
     @keyframes pulseGlow {
-      0% { opacity: 0.5; transform: translate(-50%, -50%) scale(0.95); }
-      100% { opacity: 1; transform: translate(-50%, -50%) scale(1.05); }
+      0% { opacity: 0.6; transform: translate(-50%, -50%) scale(0.95); }
+      100% { opacity: 1; transform: translate(-50%, -50%) scale(1.08); }
     }
 
     .logo {
-      max-width: 280px;
-      width: 100%;
+      max-width: 420px;
+      width: 90%;
       height: auto;
-      filter: drop-shadow(0 0 15px rgba(0,174,255,0.5));
-      transition: filter 0.3s ease;
+      display: block;
+      position: relative;
+      z-index: 2;
+      filter: drop-shadow(0 0 20px rgba(0,174,255,0.4));
+      transition: filter 0.4s ease, transform 0.3s ease;
+      border-radius: 0;
+      background: transparent;
     }
 
     .logo:hover {
-      filter: drop-shadow(0 0 25px rgba(76,201,255,0.8));
+      filter: drop-shadow(0 0 30px rgba(76,201,255,0.7));
+      transform: scale(1.01);
     }
 
     .hero h1 {
@@ -365,20 +389,22 @@
       vertical-align: middle;
     }
 
+    /* Fixed tool status layout - proper grid alignment */
     .tool-status {
       background: #07101Fcc;
       border-radius: 20px;
-      padding: 1rem;
+      padding: 0.5rem;
       margin: 1rem 0;
       font-size: 0.9rem;
       border-left: 3px solid #4CC9FF;
     }
 
     .tool-item {
-      display: flex;
-      justify-content: space-between;
+      display: grid;
+      grid-template-columns: 160px 1fr auto;
       align-items: center;
-      padding: 0.5rem;
+      gap: 1rem;
+      padding: 0.75rem 1rem;
       border-bottom: 1px solid #00aeff33;
     }
 
@@ -386,23 +412,40 @@
       border-bottom: none;
     }
 
+    .tool-name {
+      font-weight: bold;
+      color: #E5EAF2;
+    }
+
+    .tool-version {
+      justify-self: start;
+    }
+
     .version-tag {
       font-family: monospace;
       background: #02050A;
-      padding: 0.2rem 0.6rem;
+      padding: 0.25rem 0.8rem;
       border-radius: 20px;
-      font-size: 0.75rem;
+      font-size: 0.8rem;
       color: #4CC9FF;
+      border: 1px solid #00aeff55;
+      display: inline-block;
+    }
+
+    .tool-action {
+      justify-self: end;
     }
 
     .update-btn {
       background: #00AEFF33;
       border: 1px solid #00AEFF;
-      padding: 0.2rem 0.8rem;
+      padding: 0.3rem 1rem;
       border-radius: 20px;
       font-size: 0.7rem;
       cursor: pointer;
       transition: 0.2s;
+      font-weight: bold;
+      white-space: nowrap;
     }
 
     .update-btn:hover {
@@ -410,7 +453,18 @@
       color: #02050A;
     }
 
-    @media (max-width: 760px) {
+    @media (max-width: 640px) {
+      .tool-item {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+        text-align: left;
+      }
+      .tool-version {
+        justify-self: start;
+      }
+      .tool-action {
+        justify-self: start;
+      }
       .container {
         padding: 0 1rem;
       }
@@ -424,7 +478,7 @@
         font-size: 1.2rem;
       }
       .logo {
-        max-width: 200px;
+        max-width: 280px;
       }
     }
 
@@ -447,9 +501,11 @@
 
 <div class="container">
   <div class="hero reveal">
-    <div class="logo-container">
-      <div class="logo-glow"></div>
-      <img src="logo.png" alt="SpaceBallz's Usenet Uploader" class="logo" onerror="this.style.display='none'; document.querySelector('.logo-container').innerHTML+='<div style=\'font-size:2rem; font-weight:bold;\'>SpaceBallz<br><span style=\'font-size:1rem;\'>USENET UPLOADER</span></div>'">
+    <div class="logo-wrapper">
+      <div class="logo-glow-background"></div>
+      <div class="logo-glow-inner"></div>
+      <img src="logo.png" alt="SpaceBallz's Usenet Uploader" class="logo" id="mainLogo" onerror="this.style.display='none'; document.getElementById('fallbackText').style.display='block'">
+      <div id="fallbackText" style="display: none; font-size: 2rem; font-weight: bold; background: linear-gradient(135deg, #fff, #4CC9FF); background-clip: text; -webkit-background-clip: text; color: transparent;">SpaceBallz<br><span style="font-size:1rem;">USENET UPLOADER</span></div>
     </div>
     <h1>SpaceBallz's SUU</h1>
     <div class="sub">Compress. Protect. Upload. Automate.</div>
@@ -478,27 +534,27 @@
       <p style="margin-bottom: 1rem; font-size: 1.1rem;">🚀 <strong>First-run assistant</strong> — If required tools are missing, SUU will alert you and, with your permission, automatically download the latest versions from official GitHub repositories.</p>
       <div class="tool-status">
         <div class="tool-item">
-          <span><strong>7-Zip</strong> (7z.exe)</span>
-          <span class="version-tag" id="7zip-version">v24.08</span>
-          <button class="update-btn" data-tool="7zip">Check Upgrade</button>
+          <span class="tool-name"><strong>7-Zip</strong> (7z.exe)</span>
+          <span class="tool-version"><span class="version-tag">v26.01</span></span>
+          <span class="tool-action"><button class="update-btn" data-tool="7zip">Check Upgrade</button></span>
         </div>
         <div class="tool-item">
-          <span><strong>Nyuu</strong> (nyuu.exe)</span>
-          <span class="version-tag" id="nyuu-version">v0.4.3</span>
-          <button class="update-btn" data-tool="nyuu">Check Upgrade</button>
+          <span class="tool-name"><strong>Nyuu</strong> (nyuu.exe)</span>
+          <span class="tool-version"><span class="version-tag">v0.4.0</span></span>
+          <span class="tool-action"><button class="update-btn" data-tool="nyuu">Check Upgrade</button></span>
         </div>
         <div class="tool-item">
-          <span><strong>ParPar</strong> (parpar.exe)</span>
-          <span class="version-tag" id="parpar-version">v0.5.3</span>
-          <button class="update-btn" data-tool="parpar">Check Upgrade</button>
+          <span class="tool-name"><strong>ParPar</strong> (parpar.exe)</span>
+          <span class="tool-version"><span class="version-tag">v0.4.5</span></span>
+          <span class="tool-action"><button class="update-btn" data-tool="parpar">Check Upgrade</button></span>
         </div>
         <div class="tool-item">
-          <span><strong>par2cmdline</strong> (par2.exe)</span>
-          <span class="version-tag" id="par2-version">v0.8.1</span>
-          <button class="update-btn" data-tool="par2">Check Upgrade</button>
+          <span class="tool-name"><strong>par2cmdline</strong> (par2.exe)</span>
+          <span class="tool-version"><span class="version-tag">v1.4.0</span></span>
+          <span class="tool-action"><button class="update-btn" data-tool="par2">Check Upgrade</button></span>
         </div>
       </div>
-      <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 1.5rem;">
+      <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 1.5rem; flex-wrap: wrap;">
         <button id="checkAllToolsBtn" style="background: #07101F; border: 1px solid #4CC9FF; color: #4CC9FF;">🔍 Check All Tools for Updates</button>
         <button id="simulateFirstRunBtn" style="background: #00AEFF33; border: 1px solid #00AEFF;">✨ Simulate First-Run Alert</button>
       </div>
@@ -550,7 +606,9 @@
   <div class="section reveal">
     <h2>📊 SpaceBallz vs. Typical Uploaders</h2>
     <table class="comparison-table">
-      <thead><tr><th>Feature</th><th>SpaceBallz SUU</th><th>Typical Uploaders</th></tr></thead>
+      <thead>
+        <tr><th>Feature</th><th>SpaceBallz SUU</th><th>Typical Uploaders</th>
+      </tr></thead>
       <tbody>
         <tr><td>Modern GUI</td><td>✓</td><td>✗</td></tr>
         <tr><td>Multi-Account</td><td>✓</td><td>Limited</td></tr>
@@ -581,7 +639,7 @@
       <p style="margin: 0.5rem 0;">Version 1.0 Public · <strong>Windows x64 only</strong> <span class="windows-badge">Windows 10/11</span></p>
       <p style="font-size:0.9rem; margin-bottom:0.5rem;">💎 Freeware — no open source license. Regular binary updates.</p>
       <p style="font-size:0.85rem; margin-bottom:1rem;">✨ NEW: Automatic tool download & version tracking ✨</p>
-      <div style="display: flex; gap: 1rem; justify-content: center; margin: 1.5rem 0;">
+      <div style="display: flex; gap: 1rem; justify-content: center; margin: 1.5rem 0; flex-wrap: wrap;">
         <button id="downloadBottomBtn">⬇ Download SUU v1.0 (Windows)</button>
         <button id="releaseNotesBtn" style="background: transparent; border: 1px solid #00AEFF; color:#00AEFF;">📜 Release Notes</button>
       </div>
@@ -613,7 +671,7 @@
   <footer>
     <div class="footer-links">
       <a href="https://github.com/SpaceBallz2k8/SUU">GitHub</a> | 
-      <a href="https://github.com/SpaceBallz2k8/SUU/releases/download/v1.0.0/suu_latest.exe">Download</a> | 
+      <a href="https://github.com/SpaceBallz2k8/SUU/releases/download/v1.2/suu_latest.exe">Download</a> | 
       <a href="#">Documentation</a> | 
       <a href="https://github.com/SpaceBallz2k8/SUU/issues">Issue Tracker</a>
     </div>
@@ -746,6 +804,7 @@
     notif.style.zIndex = '1000';
     notif.style.backdropFilter = 'blur(8px)';
     notif.style.fontSize = '0.9rem';
+    notif.style.maxWidth = '320px';
     document.body.appendChild(notif);
     setTimeout(() => notif.remove(), 4000);
   }
@@ -792,7 +851,7 @@
     if (userConfirmed) {
       showNotification(`🚀 Starting tool download from GitHub repos...`, true);
       setTimeout(() => {
-        showNotification(`✅ All tools installed! 7-Zip v24.08, Nyuu v0.4.3, ParPar v0.5.3`, true);
+        showNotification(`✅ All tools installed! 7-Zip v26.01, Nyuu v0.4.0, ParPar v0.4.5`, true);
         showNotification(`💡 Tools can be updated anytime in Options → Tool Manager`, false);
       }, 2000);
     } else {
